@@ -35,93 +35,13 @@ const categories = [
   "Painting",
 ];
 
-const GigRequestCard = ({ gig, onStatusChange }) => {
-  const statusColors = {
-    pending: "warning",
-    accepted: "success",
-    rejected: "error"
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  return (
-    <Card sx={{ mb: 2, boxShadow: 2 }}>
-      <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Box>
-            <Typography variant="h6" component="h3">
-              {gig.title}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              by {gig.seller}
-            </Typography>
-          </Box>
-          <Chip
-            label={gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
-            color={statusColors[gig.status]}
-            size="small"
-          />
-        </Box>
-
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={6}>
-            <Typography variant="body2" color="text.secondary">
-              Category
-            </Typography>
-            <Typography variant="body1">
-              {gig.category}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body2" color="text.secondary">
-              Price
-            </Typography>
-            <Typography variant="body1">
-              ${gig.price}/hr
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          {gig.description}
-        </Typography>
-
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            Submitted: {formatDate(gig.submittedAt)}
-          </Typography>
-          <Box>
-            <IconButton
-              color="success"
-              onClick={() => onStatusChange(gig.id, "accepted")}
-              disabled={gig.status === "accepted"}
-            >
-              <CheckCircleIcon />
-            </IconButton>
-            <IconButton
-              color="error"
-              onClick={() => onStatusChange(gig.id, "rejected")}
-              disabled={gig.status === "rejected"}
-            >
-              <CancelIcon />
-            </IconButton>
-            <IconButton color="primary">
-              <VisibilityIcon />
-            </IconButton>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
-  );
+const statusColors = {
+  pending: "warning",
+  accepted: "success",
+  rejected: "error"
 };
+
+
 
 const GigAdminDashboard = () => {
   const [gigs, setGigs] = useState([]);
@@ -131,6 +51,7 @@ const GigAdminDashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateSort, setDateSort] = useState("newest");
   const [activeTab, setActiveTab] = useState("pending");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Add useEffect to fetch services
   useEffect(() => {
@@ -180,19 +101,138 @@ const GigAdminDashboard = () => {
     };
   
     fetchServices();
-  }, []);
+  }, [setGigs, activeTab]);
 
-  // Rest of your existing functions
-  const handleStatusChange = async (gigId, newStatus) => {
+  const GigRequestCard = ({ gig }) => {
+  
+    const formatDate = (dateString) => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+  
+    return (
+      <Card sx={{ mb: 2, boxShadow: 2 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+            <Box>
+              <Typography variant="h6" component="h3">
+                {gig.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                by {gig.seller}
+              </Typography>
+            </Box>
+            <Chip
+              label={gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
+              color={statusColors[gig.status]}
+              size="small"
+            />
+          </Box>
+  
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={6}>
+              <Typography variant="body2" color="text.secondary">
+                Category
+              </Typography>
+              <Typography variant="body1">
+                {gig.category}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body2" color="text.secondary">
+                Price
+              </Typography>
+              <Typography variant="body1">
+                ${gig.price}/hr
+              </Typography>
+            </Grid>
+          </Grid>
+  
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            {gig.description}
+          </Typography>
+  
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Submitted: {formatDate(gig.submittedAt)}
+            </Typography>
+            <Box>
+              <IconButton
+                color="success"
+                onClick={() => handleStatusApproval(gig.id, "accepted")}
+                disabled={gig.status === "accepted" || isUpdating}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+              <IconButton
+                color="error"
+                onClick={() => handleStatusRejection(gig.id, "rejected")}
+                disabled={gig.status === "rejected"}
+              >
+                <CancelIcon />
+              </IconButton>
+              <IconButton color="primary">
+                <VisibilityIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const handleStatusApproval = async (serviceId, newStatus) => {
     try {
-      await axiosInstance.put(`/admins/services/${gigId}/status`, { status: newStatus });
-      setGigs(gigs.map(gig => 
-        gig.id === gigId ? { ...gig, status: newStatus } : gig
-      ));
+      setIsUpdating(true);
+      const response = await axiosInstance.put(`/admins/approve-service/${serviceId}`);
+      
+      if (response.data.success) {
+        //Update local state to move gig to accepted tab
+        setGigs(prevGigs => 
+          prevGigs.map(gig => 
+            gig.serviceId === serviceId 
+              ? { ...gig, status: 'accepted' } 
+              : gig
+          )
+        );
+        
+      }
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('Error updating service status:', error);
+      setError(error.response?.data?.message || 'Failed to update service status');
+    } finally{
+      setIsUpdating(false);
     }
   };
+
+  const handleStatusRejection = async (serviceId, newStatus) => {
+    try {
+      setIsUpdating(true);
+      const response = await axiosInstance.put(`/admins/reject-service/${serviceId}`);
+      
+      if (response.data.success) {
+        //Update local state to move gig to accepted tab
+        setGigs(prevGigs => 
+          prevGigs.map(gig => 
+            gig.serviceId === serviceId 
+              ? { ...gig, status: 'rejected' } 
+              : gig
+          )
+        );
+        
+      }
+    } catch (error) {
+      console.error('Error updating service status:', error);
+      setError(error.response?.data?.message || 'Failed to update service status');
+    } finally{
+      setIsUpdating(false);
+    }
+  }
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -325,7 +365,7 @@ const GigAdminDashboard = () => {
               <GigRequestCard 
                 key={gig.id} 
                 gig={gig} 
-                onStatusChange={handleStatusChange}
+                //onStatusChange={handleStatus}
               />
             ))
           ) : (
@@ -344,3 +384,9 @@ const GigAdminDashboard = () => {
 };
 
 export default GigAdminDashboard;
+
+
+
+
+
+
