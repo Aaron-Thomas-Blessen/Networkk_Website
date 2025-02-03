@@ -34,7 +34,7 @@ import LocationTest from './pages/Seller/Auto';
 
 import ServiceImages from "./pages/Seller/ServiceImages";
 
-
+import UserDash from "./pages/User/User";
 
 
 function App() {
@@ -57,7 +57,7 @@ function App() {
           <Route path="/gigcreate" element={<GigCreate />} />
           <Route path="/create" element={<Create />} />
           <Route path="/seller-dash" element={<Dashboard />} />
-          <Route path="/user-dash" element={<UserDashboard />} />
+          <Route path="/user-dash" element={<UserDash />} />
           <Route path="/user-details" element={<UserDetailsForm />} />
           <Route path="/seller-details" element={<SellerDetailsForm />} />
           <Route path="/admin-home" element={<AdminHome />} />

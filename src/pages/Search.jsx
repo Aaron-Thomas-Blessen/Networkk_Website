@@ -159,6 +159,10 @@ export default function Search() {
 
   return (
     <div className="container mx-auto p-4">
+      {/* Remove Navbar component when rendered inside User dashboard */}
+      {/* Rest of the search component remains the same */}
+       
+    <div className="container mx-auto p-4">
       {isLoadingLocation ? (
         <div className="text-center py-4">Loading your location...</div>
       ) : locationError ? (
@@ -343,5 +347,7 @@ export default function Search() {
         </>
       )}
     </div>
+    </div> 
   );
+
 }
