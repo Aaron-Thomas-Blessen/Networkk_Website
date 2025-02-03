@@ -20,7 +20,10 @@ import UserAuth from "./pages/User/UserAuth";
 import BookingsPage from "./pages/User/BookingPage";
 import Booking from "./pages/User/Booking";
 import Payment from "./pages/User/Payment";
-import Dashboard from "./pages/SellerDashboard";
+import SellerDashboard from "./pages/SellerDashboard";
+
+import Seller from "./pages/Seller/Seller";
+
 import UserDashboard from "./pages/UserDashboard";
 import UserDetailsForm from "./pages/User/UserDetails";
 import Test from "./pages/test";
@@ -56,7 +59,8 @@ function App() {
           <Route path="/payment" element={<Payment />} />
           <Route path="/gigcreate" element={<GigCreate />} />
           <Route path="/create" element={<Create />} />
-          <Route path="/seller-dash" element={<Dashboard />} />
+          <Route path="/seller" element={<SellerDashboard />} />
+          <Route path="/seller-dash" element={<Seller />} />
           <Route path="/user-dash" element={<UserDash />} />
           <Route path="/user" element={<UserDashboard  />} />
           <Route path="/user-details" element={<UserDetailsForm />} />
