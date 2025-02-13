@@ -34,6 +34,8 @@ import LocationTest from "./pages/Seller/Auto";
 
 import ServiceImages from "./pages/Seller/ServiceImages";
 
+import Pay from "./pages/User/Pay";
+
 function App() {
   return (
     <AuthProvider>
@@ -48,6 +50,8 @@ function App() {
               <Route path="/user-auth" element={<UserAuth />} />
               <Route path="/search" element={<Search />} />
               <Route path="/service/:id" element={<ServiceDetails />} />
+
+              <Route path="/pay" element={<Pay />} />
 
               {/* Admin routes */}
               <Route
