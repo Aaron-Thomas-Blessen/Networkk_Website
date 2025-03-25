@@ -71,15 +71,16 @@ const SellerView = () => {
   );
 
   return (
-    <div className=" bg-gray-50">
+    <div className="bg-gray-50">
       <div className="fixed inset-y-0 left-0 z-30">
         <SellerNavbar />
       </div>
       
-      <div className="ml-64">
-        {/* Header Section */}
+      {/* Reduced margin-left from ml-64 to ml-48 */}
+      <div className="ml-20">
+        {/* Header Section - Adjusted padding */}
         <div className="bg-gradient-to-r from-sky-600 to-sky-700 text-white py-8">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4"> {/* Reduced padding from px-6 to px-4 */}
             <h1 className="text-4xl font-bold mb-4">{gig.title}</h1>
             <Chip
               label={gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
@@ -101,8 +102,8 @@ const SellerView = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="container mx-auto px-6 py-8">
+        {/* Main Content - Adjusted padding */}
+        <div className="container mx-auto px-4 py-8"> {/* Reduced padding from px-6 to px-4 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               {/* Image Carousel */}
