@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { FaClock, FaMapMarkerAlt, FaCheck } from "react-icons/fa";
+import { FaClock, FaMapMarkerAlt, FaCheck, FaStar } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Chip, CircularProgress } from "@mui/material";
 import axiosInstance from "../../utils/axios";
@@ -13,6 +13,9 @@ const SellerView = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
@@ -45,6 +48,27 @@ const SellerView = () => {
 
     return () => clearInterval(autoSlide);
   }, [images.length]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!gig?.id) return;
+      
+      try {
+        const response = await axiosInstance.get(`/reviews/service/${gig.id}`);
+        if (response.data.success) {
+          setReviews(response.data.reviews);
+          setAverageRating(response.data.averageRating);
+          setReviewCount(response.data.count);
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    if (gig) {
+      fetchReviews();
+    }
+  }, [gig?.id]);
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -79,33 +103,29 @@ const SellerView = () => {
       {/* Reduced margin-left from ml-64 to ml-48 */}
       <div className="ml-20">
         {/* Header Section - Adjusted padding */}
-        <div className="bg-gradient-to-r from-sky-600 to-sky-700 text-white py-8">
-          <div className="container mx-auto px-4"> {/* Reduced padding from px-6 to px-4 */}
-            <h1 className="text-4xl font-bold mb-4">{gig.title}</h1>
-            <Chip
-              label={gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
-              color={
-                gig.status === "pending" ? "warning" : 
-                gig.status === "accepted" ? "success" : "error"
-              }
-              size="small"
-              sx={{ 
-                borderRadius: '9999px',
-                backgroundColor: gig.status === "pending" ? '#FCD34D' : 
-                              gig.status === "accepted" ? '#34D399' : '#EF4444',
-                color: '#ffffff',
-                '& .MuiChip-label': {
-                  fontWeight: 500
-                }
-              }}
-            />
-          </div>
-        </div>
+        
 
         {/* Main Content - Adjusted padding */}
         <div className="container mx-auto px-4 py-8"> {/* Reduced padding from px-6 to px-4 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
+              <h1 className="text-3xl font-bold mb-4">{gig.title}</h1>
+              
+              {/* Service Provider Info */}
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-sky-700 flex items-center justify-center text-white font-bold">
+                  {gig.serviceProvider?.fname?.[0] || "U"}
+                </div>
+                <div>
+                  <p className="font-semibold">{gig.serviceProvider?.fname} {gig.serviceProvider?.lname}</p>
+                  <div className="flex items-center">
+                    <FaStar className="text-yellow-400 mr-1" />
+                    <span className="font-semibold">{averageRating || 0}</span>
+                    <span className="text-gray-600 ml-1">({reviewCount || 0})</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Image Carousel */}
               {images.length > 0 && (
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -168,6 +188,50 @@ const SellerView = () => {
               <div className="bg-white rounded-xl shadow-sm p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">About This Service</h2>
                 <p className="text-gray-600 leading-relaxed">{gig.description}</p>
+              </div>
+
+              {/* Reviews Section */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Reviews</h2>
+                  <div className="flex items-center">
+                    <div className="bg-sky-700 rounded-md px-3 py-1 text-white font-bold flex items-center">
+                      <FaStar className="mr-1" />
+                      <span>{averageRating}</span>
+                    </div>
+                    <span className="ml-2 text-gray-600">({reviewCount} reviews)</span>
+                  </div>
+                </div>
+
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review.id} className="mb-6 p-6 bg-white rounded-lg shadow-md">
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-sky-700 flex items-center justify-center text-white font-bold">
+                          {review.user?.fname?.[0]}
+                        </div>
+                        <div>
+                          <p className="font-semibold">{review.user?.fname} {review.user?.lname}</p>
+                          <div className="flex items-center mt-1">
+                            <div className="flex mr-2">
+                              {[...Array(5)].map((_, i) => (
+                                <FaStar
+                                  key={i}
+                                  className={i < review.rating ? "text-yellow-400" : "text-gray-300"}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-700">{review.description}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-6 bg-gray-50 rounded-lg text-center">
+                    <p className="text-gray-500">No reviews yet.</p>
+                  </div>
+                )}
               </div>
             </div>
 
