@@ -149,7 +149,7 @@ const View = () => {
           {/* Right Section (Pricing & Details) */}
           <div className="lg:col-span-1">
             <div className="top-4 bg-white p-6 border rounded-xl shadow-lg">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">${gig.price}/hr</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Rs {gig.price}/hr</h2>
               <p className="text-gray-600 mb-6">{gig.description.substring(0, 100)}...</p>
               <ul className="mb-6 space-y-3">
                 <li className="flex items-center">

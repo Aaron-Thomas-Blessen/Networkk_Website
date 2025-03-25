@@ -26,7 +26,7 @@ const GigsView = () => {
                         <div key={service.id} className="service-item">
                             <h2>{service.name}</h2>
                             <p>{service.description}</p>
-                            <p>Price: ${service.price}</p>
+                            <p>Price: Rs{service.price}</p>
                         </div>
                     ))
                 ) : (

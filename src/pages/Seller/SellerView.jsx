@@ -16,6 +16,7 @@ const SellerView = () => {
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
+  const [sellerInfo, setSellerInfo] = useState(null);
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
@@ -28,6 +29,12 @@ const SellerView = () => {
         const response = await axiosInstance.get(`/services/${gig.id}`);
         const pics = response.data.demoPics ? JSON.parse(response.data.demoPics) : [];
         setImages(pics);
+        
+        // Fetch seller details if service has sellerId
+        if (response.data.sellerId) {
+          const sellerResponse = await axiosInstance.get(`/users/${response.data.sellerId}`);
+          setSellerInfo(sellerResponse.data);
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -114,10 +121,11 @@ const SellerView = () => {
               {/* Service Provider Info */}
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-sky-700 flex items-center justify-center text-white font-bold">
-                  {gig.serviceProvider?.fname?.[0] || "U"}
+                  {sellerInfo?.fname?.[0] || "U"}
                 </div>
                 <div>
-                  <p className="font-semibold">{gig.serviceProvider?.fname} {gig.serviceProvider?.lname}</p>
+                  <p className="font-semibold">{gig.title}</p>
+                  <p className="text-sm text-gray-500">{sellerInfo?.email}</p>
                   <div className="flex items-center">
                     <FaStar className="text-yellow-400 mr-1" />
                     <span className="font-semibold">{averageRating || 0}</span>
@@ -240,7 +248,7 @@ const SellerView = () => {
               <div className="sticky top-8 space-y-6">
                 <div className="bg-white rounded-xl shadow-sm p-8">
                   <div className="flex items-baseline justify-between mb-6">
-                    <h2 className="text-3xl font-bold text-gray-900">₹{gig.price}</h2>
+                    <h2 className="text-3xl font-bold text-gray-900">Rs {gig.price}</h2>
                     <span className="text-gray-500 font-medium">per hour</span>
                   </div>
 
