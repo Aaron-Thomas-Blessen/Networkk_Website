@@ -127,7 +127,21 @@ const MyGigs = () => {
                       <Trash2 size={20} />
                     </button>
                     <Link 
-                      to={`/service/${gig.serviceId}`}
+                      to="/seller/service-view"
+                      state={{ 
+                        gig: {
+                          id: gig.serviceId,
+                          title: gig.title,
+                          description: gig.description,
+                          price: gig.basePrice,
+                          category: gig.category,
+                          status: gig.status,
+                          seller: gig.serviceProvider?.name || 'Unknown Provider',
+                          sellerId: gig.serviceProvider?.serviceProviderId,
+                          submittedAt: gig.createdAt,
+                          demoPics: gig.demoPics
+                        }
+                      }}
                       className="text-sky-500 hover:text-sky-600 transition-colors p-2 rounded-lg hover:bg-sky-50"
                       title="View"
                     >

@@ -34,7 +34,7 @@ import LocationTest from "./pages/Seller/Auto";
 
 import ServiceImages from "./pages/Seller/ServiceImages";
 import ProviderBookingPage from "./pages/Seller/BookingStatus";
-
+import SellerView from "./pages/Seller/SellerView";
 import Pay from "./pages/User/Pay";
 
 import View from "./pages/Seller/View";
@@ -53,6 +53,8 @@ function App() {
               <Route path="/user-auth" element={<UserAuth />} />
               <Route path="/search" element={<Search />} />
               <Route path="/service/:id" element={<ServiceDetails />} />
+
+<Route path="/seller/service-view" element={<SellerView />} />
 
               <Route path="/bookingstatus" element={<ProviderBookingPage />} />
 
